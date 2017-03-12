@@ -4,7 +4,7 @@ html, body {
   padding: 0;
 }
 #map {
-  height: 90%;
+  height: 95%;
 }
 
 #floating-panel {
@@ -92,3 +92,24 @@ html, body {
 }
 
 .show-search {display:block;}
+
+.search-range {
+  /*position: relative;*/
+  /*display: inline-block;  */
+  position: absolute;
+  background-color: #f9f9f9;
+  /*min-width: 160px;*/
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  top: 10px;
+  left: 55%;
+  margin-left: -100px;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+  /*text-align: center;*/
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+}

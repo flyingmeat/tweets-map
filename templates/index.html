@@ -24,6 +24,13 @@
 		<button id="remove-result">remove</button>
 		<button id="close-result">close</button>
 	</div>
+	<div class="search-range">
+		<div>search in range(*10km):</div>
+		<input type="text" id="range" size="5">
+		<button id="remove-range-result">remove</button>
+		<button id="click-map">search</button>
+		<div id="info"></div>
+	</div>
 	<div id = "map"></div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
@@ -67,6 +74,7 @@
 		var socket = io.connect('http://tweets-map.2pfeit4xqe.us-east-1.elasticbeanstalk.com/test');
 		var red = [];
 		var blue = [];
+		var green = [];
 		socket.on('connect', function() {
 			console.log('I\'m connected!');
 		});
@@ -132,6 +140,51 @@
 	    		infowindow.open(map, marker);
 			});
 			red.push(marker);
+		});
+		socket.on('range_search_response', function(data) {
+			console.log(data['data']);
+			$("#info").text("there are " + data['data'].length + " results");
+			data['data'].forEach(function(item) {
+				var marker = new google.maps.Marker({
+					icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+				    map: map,
+				    // draggable: true,
+				    animation: google.maps.Animation.DROP,
+				    position: {lat: item['_source']['coordinates'][1], lng: item['_source']['coordinates'][0]}
+				});
+				var tweet = item['_source']['text']
+				var infowindow = new google.maps.InfoWindow({
+					content: tweet
+				});
+				marker.addListener('click', function() {
+		    		infowindow.open(map, marker);
+				});
+				green.push(marker);
+			});
+		});
+		// --------------------- range search ----------------------------//
+		$("#click-map").click(function() {
+			if ($("#range").val() == "") {
+				$("#info").text("Please provide the range you want to search within");
+			}
+			else {
+				$("#info").text("Please click on the map");
+				green = clearTag(green);
+				var handler = google.maps.event.addListener(map, "click", function (event) {
+				    var latitude = event.latLng.lat();
+				    var longitude = event.latLng.lng();
+				    var range = $("#range").val();
+				    console.log( latitude + ', ' + longitude );
+				    $("#info").text("");
+				    google.maps.event.removeListener(handler);
+				    socket.emit('range_search', {lat: latitude, lon: longitude, distance: range * 10});
+				});
+			}
+			
+		});
+		$("#remove-range-result").click(function() {
+			green = clearTag(green);
+			$("#info").text("");
 		});
 		function clearTag(tag_list) {
 			for (var i = 0; i < tag_list.length; i++) {

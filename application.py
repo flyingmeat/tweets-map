@@ -41,6 +41,29 @@ def test_connect():
 	send_thread = Send_Thread()
 	send_thread.start()
 
+@socketio.on('range_search', namespace='/test')
+def search_range(data):
+	print data
+	result = elastic.search(
+		index = 'tweet_test',
+		doc_type='tweets',
+		body={
+			'query': {
+				'bool': {
+					'filter': {
+						'geo_distance': {
+							'distance' : str(data["distance"]) + "km",
+							'coordinates': {
+								"lat": data["lat"],
+								"lon": data["lon"]
+							}
+						}
+					}
+				}
+			}
+		})
+	socketio.emit('range_search_response', {'data': result['hits']['hits']}, namespace = '/test')
+
 @socketio.on('search', namespace='/test')
 def search_keyword(data):
 	print data
