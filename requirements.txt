@@ -15,7 +15,7 @@ Flask-WhooshAlchemy==0.55a0
 Flask-WTF==0.14.2
 flup==1.0.2
 itsdangerous==0.24
-Jinja2==2.9.5
+Jinja2==2.11.3
 MarkupSafe==0.23
 oauthlib==2.0.1
 packaging==16.8
